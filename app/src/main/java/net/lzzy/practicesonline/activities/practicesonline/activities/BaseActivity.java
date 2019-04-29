@@ -15,6 +15,9 @@ import net.lzzy.practicesonline.activities.practicesonline.utils.AppUtils;
  * Description:
  */
 public abstract class BaseActivity extends AppCompatActivity {
+
+    private Fragment fragment;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         AppUtils.addActivity(this);
         setContentView(getLayoutRes());
         FragmentManager manager = getSupportFragmentManager();
-        Fragment fragment = manager.findFragmentById(getContainerId());
+        fragment = manager.findFragmentById(getContainerId());
         if (fragment == null) {
             fragment = createFragment();
             manager.beginTransaction().add(getContainerId(), fragment).commit();
@@ -34,6 +37,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         AppUtils.removeActivity(this);
     }
+        protected Fragment getFragment(){
+        return fragment;
+        }
 
     @Override
     protected void onResume() {
@@ -52,5 +58,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getContainerId();
 
     protected abstract Fragment createFragment();
+
 
 }
