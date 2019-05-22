@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import net.lzzy.practicesonline.R;
 import net.lzzy.practicesonline.activities.practicesonline.fragments.QuestionFragment;
+import net.lzzy.practicesonline.activities.practicesonline.models.FavoriteFactory;
 import net.lzzy.practicesonline.activities.practicesonline.models.Question;
 import net.lzzy.practicesonline.activities.practicesonline.models.QuestionFactory;
 import net.lzzy.practicesonline.activities.practicesonline.models.UserCookies;
@@ -36,14 +37,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.icu.text.Normalizer.NO;
-import static javax.net.ssl.SSLEngineResult.Status.OK;
+
 
 public class QuestionActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_RESULT = 0;
+    public static final String EXTRA_PRACTICE_ID = "extraPracticeId";
     public static final String EXTRA_RESULT = "extraResult";
-    public static final String EXTRA_PRACTOCA_ID = "extraPractocaId";
-    private String practocaId;
+
+    public String practocaId;
     private int apiId;
     private List<Question> questions;
     private TextView tvView;
@@ -51,6 +52,8 @@ public class QuestionActivity extends AppCompatActivity {
     private ViewPager pager;
     private boolean isCommitted = false;
     private TextView tvHint;
+    private FragmentStatePagerAdapter adapter;
+
     private int pos;
     private View[] dots;
     public static final int OK = 0;
@@ -101,7 +104,7 @@ public class QuestionActivity extends AppCompatActivity {
     private void redirect() {
         List<QuestionResult>results=UserCookies.getInstance().getResultFromCookies(questions);
         Intent intent=new Intent(this,ResultActivity.class);
-        intent.putExtra(EXTRA_PRACTOCA_ID,practocaId);
+        intent.putExtra(EXTRA_PRACTICE_ID,practocaId);
         intent.putParcelableArrayListExtra(EXTRA_RESULT,(ArrayList<? extends Parcelable>)results);
         startActivityForResult(intent, REQUEST_CODE_RESULT);
 
@@ -110,7 +113,25 @@ public class QuestionActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // TODO:返回查看数据
+        if (data != null) {
+            if (data.getBooleanExtra(ResultActivity.COLLECTION, false)) {
+                FavoriteFactory favoriteFactory = FavoriteFactory.getInstance();
+                List<Question> cc = new ArrayList<>();
+                for (Question question : questions) {
+                    if (favoriteFactory.isQuestionStarred(question.getId().toString())) {
+                        cc.add(question);
+                    }
+                }
+                questions.clear();
+                questions.addAll(cc);
+                initDots();
+
+
+            } else {
+                pager.setCurrentItem(data.getIntExtra(ResultActivity.QUESTION, -1));
+            }
+            // TODO:返回查看数据
+        }
     }
 
     String info;
@@ -143,7 +164,9 @@ public class QuestionActivity extends AppCompatActivity {
             switch (msg.what) {
                 case OK:
                     questionActivity.isCommitted = true;
+                    UserCookies.getInstance().commitPractice(questionActivity.practocaId);
                     Toast.makeText(questionActivity, "提交成功", Toast.LENGTH_SHORT).show();
+
                     break;
                 case NO:
                     Toast.makeText(questionActivity, "提交失败", Toast.LENGTH_SHORT).show();
@@ -221,6 +244,7 @@ public class QuestionActivity extends AppCompatActivity {
         tvCommit = findViewById(R.id.activity_question_tv_commit);
         tvHint = findViewById(R.id.activity_question_tv_hint);
         pager = findViewById(R.id.activity_question_pager);
+        isCommitted=UserCookies.getInstance().isPracticeCommitted(practocaId);
         if (isCommitted) {
             tvCommit.setVisibility(View.GONE);
             tvView.setVisibility(View.VISIBLE);
@@ -230,6 +254,20 @@ public class QuestionActivity extends AppCompatActivity {
             tvCommit.setVisibility(View.VISIBLE);
             tvHint.setVisibility(View.GONE);
         }
+
+        adapter=new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                Question question=questions.get(position);
+                return  QuestionFragment.newInstace(question.getId().toString(),position,isCommitted);
+            }
+
+            @Override
+            public int getCount() {
+                return questions.size();
+            }
+        };
+        pager.setAdapter(adapter);
 
 
         FragmentStatePagerAdapter adapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {

@@ -65,5 +65,8 @@ public class QuestionResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (isRight ? 1 : 0));
+        dest.writeSerializable(questionId);
+        dest.writeInt(type.ordinal());
+
     }
 }

@@ -333,7 +333,7 @@ public class PracticesFragment extends BaseFragment {
         adapter = new GenericAdapter<Practice>(getActivity(), R.layout.practices_item, practices) {
             @Override
             public void populate(ViewHolder viewHolder, Practice practice) {
-                viewHolder.setTextView(R.id.practices_items_tv_name, practice.getName());
+                viewHolder.setTextView(R.id.practices_items_name, practice.getName());
                 TextView tvOutlines = viewHolder.getView(R.id.practices_items_btn_outlines);
                 if (practice.isDownloaded()) {
                     tvOutlines.setVisibility(View.VISIBLE);

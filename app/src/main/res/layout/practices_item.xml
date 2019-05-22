@@ -4,39 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:layout_marginEnd="5dp"
     android:background="@drawable/selector"
-    android:orientation="horizontal">
+    android:minHeight="50dp"
+    android:paddingStart="10dp">
 
     <TextView
-        android:id="@+id/practices_items_tv_name"
+        android:id="@+id/practices_items_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:ellipsize="end"
-        android:gravity="center_vertical"
         android:maxLines="1"
+        android:gravity="center_vertical"
         android:textColor="#20B2AA"
-        android:textSize="15sp"
-        tools:text="第一章  软件测试阶段" />
+        android:textSize="20sp"
+        tools:text="第一章  电子交易" />
 
     <Button
         android:id="@+id/practices_items_btn_outlines"
-        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:focusable="false"
+        android:textColor="@color/cardview_dark_background"
         android:textSize="20sp"
-        tools:text="要点" />
+        android:layout_margin="5dp"
+        android:background="@color/colorCard"
+        android:text="要点" />
 
     <Button
         android:id="@+id/practices_items_btn_del"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:focusable="false"
-
         android:text="删除"
-        android:textColor="@color/colorAccent"
+        android:background="@color/colorAccent"
+        android:visibility="gone"
+        android:layout_gravity="center"
         android:textSize="20sp" />
 
 </LinearLayout>
